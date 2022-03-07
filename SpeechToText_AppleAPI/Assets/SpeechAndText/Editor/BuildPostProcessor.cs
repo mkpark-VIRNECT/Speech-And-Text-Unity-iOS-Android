@@ -1,3 +1,4 @@
+#if !UNITY_EDITOR && !PLATFORM_ANDROID
 //This is a modified version of https://gist.github.com/eppz/1ebbc1cf6a77741f56d63d3803e57ba3
 using System.IO;
 using UnityEditor;
@@ -7,9 +8,9 @@ using UnityEditor.iOS.Xcode;
 public class BuildPostProcessor
 {
     [PostProcessBuildAttribute(1)]
-    public static void OnPostProcessBuild(BuildTarget target, string path)
+    public static void OnPostProcessBuild ( BuildTarget target, string path )
     {
-        if (target == BuildTarget.iOS)
+        if ( target == BuildTarget.iOS )
         {
             // Read.
             string projectPath = PBXProject.GetPBXProjectPath(path);
@@ -22,7 +23,7 @@ public class BuildPostProcessor
             string targetGUID = project.TargetGuidByName(targetName);
 #endif
             AddFrameworks(project, targetGUID);
-            
+
             var plistPath = Path.Combine(path, "Info.plist");
             var plist = new PlistDocument();
             plist.ReadFromFile(plistPath);
@@ -34,7 +35,7 @@ public class BuildPostProcessor
         }
     }
 
-    static void AddFrameworks(PBXProject project, string targetGUID)
+    static void AddFrameworks ( PBXProject project, string targetGUID )
     {
         project.AddFrameworkToProject(targetGUID, "Speech.framework", false);
         //This project appears to be a default now:
@@ -42,4 +43,5 @@ public class BuildPostProcessor
         // Add `-ObjC` to "Other Linker Flags".
         project.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-ObjC");
     }
-}
+} 
+#endif
